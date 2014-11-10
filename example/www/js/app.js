@@ -51,6 +51,7 @@ angular.module('starter', ['ionic', 'ionic.contrib.ui.cards'])
   }];
 
   $scope.cards = Array.prototype.slice.call(cardTypes, 0, 0);
+  $scope.cards = cardTypes;
 
   $scope.cardSwiped = function(index) {
     $scope.addCard();
