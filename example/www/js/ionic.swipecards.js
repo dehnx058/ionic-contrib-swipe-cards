@@ -179,7 +179,7 @@
         var rotateTo = 0; // (this.rotationAngle + (this.rotationDirection * 0.6)) || (Math.random() * -0.4);
         var duration = this.rotationAngle ? 0.2 : 0.5;
         this.el.style[TRANSITION] = '-webkit-transform ' + duration + 's ease-in-out';
-        this.el.style[ionic.CSS.TRANSFORM] = 'translate3d(' + (window.innerWidth * 1.5) + 'px,' + this.y + 'px, 0) rotate(' + rotateTo + 'rad)';
+        this.el.style[ionic.CSS.TRANSFORM] = 'translate3d(' + (0 * window.innerWidth * 1.5) + 'px,' + this.y + 'px, 0) rotate(' + rotateTo + 'rad)';
         this.onSwipe && this.onSwipe();
 
         self.positive = true;
@@ -192,7 +192,7 @@
         var rotateTo = 0; // (this.rotationAngle + (this.rotationDirection * 0.6)) || (Math.random() * 0.4);
         var duration = this.rotationAngle ? 0.2 : 0.5;
         this.el.style[TRANSITION] = '-webkit-transform ' + duration + 's ease-in-out';
-        this.el.style[ionic.CSS.TRANSFORM] = 'translate3d(' + (window.innerWidth * -1.5) + 'px,' + this.y + 'px, 0) rotate(' + rotateTo + 'rad)';
+        this.el.style[ionic.CSS.TRANSFORM] = 'translate3d(' + (0 * window.innerWidth * -1.5) + 'px,' + this.y + 'px, 0) rotate(' + rotateTo + 'rad)';
         this.onSwipe && this.onSwipe();
 
         self.positive = false;
@@ -280,7 +280,9 @@
       transclude: true,
       scope: {
         onCardSwipe: '&',
-        onDestroy: '&'
+        onDestroy: '&',
+        onKeep: '&',
+        onReject: '&'
       },
       compile: function(element, attr) {
         return function($scope, $element, $attr, swipeCards) {
@@ -294,9 +296,12 @@
                 $scope.onCardSwipe();
               });
             },
-            onDestroy: function() {
+            onDestroy: function(keep) {
               $timeout(function() {
-                $scope.onDestroy();
+                if (keep) {
+                  $scope.onKeep()
+                }
+                else $scope.onReject();
               });
             },
           });

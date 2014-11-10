@@ -51,7 +51,31 @@ angular.module('starter', ['ionic', 'ionic.contrib.ui.cards'])
   }];
 
   $scope.cards = Array.prototype.slice.call(cardTypes, 0, 0);
-  $scope.cards = cardTypes;
+
+  $scope.cards = [
+    {title: "Doubts In The Name Of Love"},
+    {title: "Plans On My Mind"},
+    {title: "Overt Loser"},
+    {title: "Hands Off My Heat"},
+    {title: "My Wooden Anarchy"},
+    {title: "Doubts In The Name Of Love"},
+    {title: "Plans On My Mind"},
+    {title: "Overt Loser"},
+    {title: "Hands Off My Heat"},
+    {title: "My Wooden Anarchy"},
+    {title: "Doubts In The Name Of Love"},
+    {title: "Plans On My Mind"},
+    {title: "Overt Loser"},
+    {title: "Hands Off My Heat"},
+    {title: "My Wooden Anarchy"},
+    {title: "Doubts In The Name Of Love"},
+    {title: "Plans On My Mind"},
+    {title: "Overt Loser"},
+    {title: "Hands Off My Heat"},
+    {title: "My Wooden Anarchy"},
+    {title: "Mystic Tuxedo"}
+  ];
+  
 
   $scope.cardSwiped = function(index) {
     $scope.addCard();
@@ -59,6 +83,19 @@ angular.module('starter', ['ionic', 'ionic.contrib.ui.cards'])
 
   $scope.cardDestroyed = function(index) {
     $scope.cards.splice(index, 1);
+  };
+
+  $scope.cardReject = function(index) {
+    console.log('cardReject, index='+index)
+    var swipeCard = this.swipeCard;
+    angular.element(swipeCard.el).addClass('reject').removeClass('keep')
+  };
+
+  $scope.cardKeep = function(index) {
+    // $scope.cards.splice(index, 1);
+    console.log('cardKeep, index='+index)
+    var swipeCard = this.swipeCard;
+    angular.element(swipeCard.el).addClass('keep').removeClass('reject')
   };
 
   $scope.addCard = function() {

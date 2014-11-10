@@ -25,12 +25,12 @@
 
 }
 
-.swipe-card {
+.XXX-swipe-card {
   display: none;
   position: relative;
   -webkit-transform: scale(1,1);
-  width: 300px;
-  height: 300px;
+  width: 320px;
+  /*height: 300px;*/
   box-sizing: border-box;
   background-color: rgb(255,255,255);
   border-radius: 4px;
@@ -39,23 +39,6 @@
   margin: 4px auto;
 }
 
-.swipe-card .title {
-  height: 40px;
-  padding: 5px;
-  line-height: 30px;
-  color: #444;
-}
-.swipe-card .image {
-  overflow: hidden;
-  max-height: 210px;
-}
-.swipe-card .button {
-  border: none;
-}
-.swipe-card .image img {
-  width: 100%;
-  border-radius: 0px 0px 4px 4px;
-}
 
 #start-card {
   color: #fff;
@@ -94,4 +77,41 @@
 }
 .swipe-card.pop-in {
   -webkit-animation: bounceIn 0.4s ease-out;
+}
+
+
+
+ion-list .list {
+  /* 320 + padding-left  */
+  width: 369px;
+  margin: 0 auto;
+}
+ion-item.item {
+  border: none;
+}
+ion-item.item-complex .item-content {
+  padding-top: 0;
+  padding-right: 0px;
+  padding-bottom: 0;
+  padding-left: 49px;
+  
+  margin: 0;
+  background-color: #ddd;
+}
+.card.tossable-card {
+  width: 320px;
+  margin: 4px auto;
+}
+
+.swipe-card.keep .tossable-card .item.item-divider {
+  background-color: lightgreen !important;
+}
+.swipe-card.reject .tossable-card .item.item-divider {
+  background-color: darkred !important;
+}
+.swipe-card.reject .tossable-card .item.item-image {
+  background-color: black;
+}
+.swipe-card.reject .tossable-card .item.item-image > img {
+  opacity: 0.5;
 }
