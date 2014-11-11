@@ -178,8 +178,10 @@
         // Fly right
         var rotateTo = 0; // (this.rotationAngle + (this.rotationDirection * 0.6)) || (Math.random() * -0.4);
         var duration = this.rotationAngle ? 0.2 : 0.5;
+        duration = 0.2  // deprecate rotationAngle
         this.el.style[TRANSITION] = '-webkit-transform ' + duration + 's ease-in-out';
-        this.el.style[ionic.CSS.TRANSFORM] = 'translate3d(' + (0 * window.innerWidth * 1.5) + 'px,' + this.y + 'px, 0) rotate(' + rotateTo + 'rad)';
+        // this.el.style[ionic.CSS.TRANSFORM] = 'translate3d(' + (0 * window.innerWidth * 1.5) + 'px,' + this.y + 'px, 0) rotate(' + rotateTo + 'rad)';
+        this.el.style[ionic.CSS.TRANSFORM] = 'translate3d(' + (0 * window.innerWidth * 1.5) + 'px,' + this.y + 'px, 0)';
         this.onSwipe && this.onSwipe();
 
         self.positive = true;
@@ -191,8 +193,10 @@
         // Fly left
         var rotateTo = 0; // (this.rotationAngle + (this.rotationDirection * 0.6)) || (Math.random() * 0.4);
         var duration = this.rotationAngle ? 0.2 : 0.5;
+        duration = 0.2  // deprecate rotationAngle
         this.el.style[TRANSITION] = '-webkit-transform ' + duration + 's ease-in-out';
-        this.el.style[ionic.CSS.TRANSFORM] = 'translate3d(' + (0 * window.innerWidth * -1.5) + 'px,' + this.y + 'px, 0) rotate(' + rotateTo + 'rad)';
+        // this.el.style[ionic.CSS.TRANSFORM] = 'translate3d(' + (0 * window.innerWidth * -1.5) + 'px,' + this.y + 'px, 0) rotate(' + rotateTo + 'rad)';
+        this.el.style[ionic.CSS.TRANSFORM] = 'translate3d(' + (0 * window.innerWidth * -1.5) + 'px,' + this.y + 'px, 0)';
         this.onSwipe && this.onSwipe();
 
         self.positive = false;
@@ -210,7 +214,7 @@
       var self = this;
       ionic.onGesture('dragstart', function(e) {
         var cx = window.innerWidth / 2;
-        if(e.gesture.touches[0].pageX < cx) {
+        if(false && e.gesture.touches[0].pageX < cx) {  // skip rotation effects
           self._transformOriginRight();
         } else {
           self._transformOriginLeft();
@@ -250,6 +254,10 @@
     },
 
     _doDrag: function(e) {
+      if ((Math.abs(e.gesture.deltaY) > 75)) {
+        this.el.style[ionic.CSS.TRANSFORM] = 'translate3d(0px, 0px, 0)';
+        return 
+      }
       var o = e.gesture.deltaX / 3;
 
       this.rotationAngle = 0 // Math.atan(o/this.touchDistance) * this.rotationDirection;
@@ -260,10 +268,17 @@
 
       this.x = this.startX + (e.gesture.deltaX * 0.4);
 
-      this.el.style[ionic.CSS.TRANSFORM] = 'translate3d(' + this.x + 'px, ' + this.y  + 'px, 0) rotate(' + (this.rotationAngle || 0) + 'rad)';
+      // this.el.style[ionic.CSS.TRANSFORM] = 'translate3d(' + this.x + 'px, ' + this.y  + 'px, 0) rotate(' + (this.rotationAngle || 0) + 'rad)';
+      this.el.style[ionic.CSS.TRANSFORM] = 'translate3d(' + this.x + 'px, ' + this.y  + 'px, 0)';
     },
+
     _doDragEnd: function(e) {
-      this.transitionOut(e);
+      if ((Math.abs(e.gesture.deltaX) < 75) || (Math.abs(e.gesture.deltaY) > 75)) {
+        this.el.style[ionic.CSS.TRANSFORM] = 'translate3d(0px, 0px, 0)';
+        console.log('cancel swipe, deltaX=' +  e.gesture.deltaX)
+      }
+      else 
+       this.transitionOut(e);
     }
   });
 
