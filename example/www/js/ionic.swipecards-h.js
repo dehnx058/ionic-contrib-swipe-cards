@@ -58,7 +58,7 @@
 
       // Calculate the top left of a default card, as a translated pos
       var topLeft = window.innerHeight / 2 - this.maxHeight/2;
-      console.log(window.innerHeight, this.maxHeight);
+      // console.log(window.innerHeight, this.maxHeight);
 
       var cardOffset = Math.min(this.cards.length, 3) * 5;
 
@@ -172,35 +172,54 @@
     },
 
     /**
-     * Fly the card back to original position on return=true, or right or left 
+     * Swipe a card over programtically, then back
      */
-    transitionOut: function(positive, in_place) {
+    swipeOver: function(positive, dist) {
       var self = this;
       var duration = 0.2;
-      var fly;
-      if (in_place === null) {
-        in_place = true;
+      if (dist == null) {
+        dist = Math.min(this.el.clientWidth/5, 50)
       }
-      fly = in_place ? 0 : 1; 
+      dir = positive === 'right' || positive > 0 ? 1 : -1;
+      flyTo = dir * dist
+      this.el.style[ionic.CSS.TRANSFORM] = 'translate3d(' + flyTo + 'px, 0, 0)';
+      setTimeout(function() {
+          self.transitionOut(dir>0)
+        }, duration * 1000);
+    }, 
+
+    /**
+     * Fly the card back to original position
+     */
+    resetPosition: function() {
+      this.el.style[ionic.CSS.TRANSFORM] = "translate3d(0px, 0px, 0px)"
+    },
+
+
+    /**
+     * Fly the card back to original position on return=true, or right or left 
+     */
+    transitionOut: function(positive) {
+      var self = this;
+      var duration = 0.2;
+      var flyTo;
+      flyTo = this.fly === 'back' ? 0 : window.innerWidth * 1.5 ; 
       this.el.style[TRANSITION] = '-webkit-transform ' + duration + 's ease-in-out';
+      self.positive = ((positive === true) || (this.x > 0))
 
-      if((positive === true) || (this.x > 0)) {
+      if(self.positive) {
         // Fly right
-        this.el.style[ionic.CSS.TRANSFORM] = 'translate3d(' + (fly * window.innerWidth * 1.5) + 'px,' + this.y + 'px, 0)';
-        this.onSwipe && this.onSwipe();
-
-        self.positive = true;
+        this.el.style[ionic.CSS.TRANSFORM] = 'translate3d(' + flyTo + 'px,' + this.y + 'px, 0)';
+        this.onSwipe && this.onSwipe(self.positive);
       } else {
         // Fly left
-        this.el.style[ionic.CSS.TRANSFORM] = 'translate3d(' + (fly * window.innerWidth * -1.5) + 'px,' + this.y + 'px, 0)';
-        this.onSwipe && this.onSwipe();
-
-        self.positive = false;
+        this.el.style[ionic.CSS.TRANSFORM] = 'translate3d(' + (-1 * flyTo) + 'px,' + this.y + 'px, 0)';
+        this.onSwipe && this.onSwipe(self.positive);
       }
       // Trigger destroy after card has swiped out
-      if (!in_place) {
+      if (this.fly != 'back') {
         setTimeout(function() {
-          self.onDestroy && self.onDestroy(true);
+          self.onDestroy && self.onDestroy(self.positive);
         }, duration * 1000);
       }
     },
@@ -217,7 +236,7 @@
         } else {
           self._transformOriginLeft();
         }
-        ionic.requestAnimationFrame(function() { self._doDragStart(e) });
+        // ionic.requestAnimationFrame(function() { self._doDragStart(e) });
       }, this.el);
 
       ionic.onGesture('drag', function(e) {
@@ -231,20 +250,24 @@
 
     // Rotate anchored to the left of the screen
     _transformOriginLeft: function() {
+      return
       this.el.style[TRANSFORM_ORIGIN] = 'left center';
       this.rotationDirection = 1;
     },
 
     _transformOriginRight: function() {
+      return
       this.el.style[TRANSFORM_ORIGIN] = 'right center';
       this.rotationDirection = -1;
     },
 
     _doDragStart: function(e) {
+      // DEPRECATE, this.touchDistance only required for rotationAngle
+      return
       var width = this.el.offsetWidth;
       var point = window.innerWidth / 2 + this.rotationDirection * (width / 2)
       var distance = Math.abs(point - e.gesture.touches[0].pageY);// - window.innerWidth/2);
-      console.log(distance);
+      // console.log(distance);
 
       this.touchDistance = distance * 10;
 
@@ -299,27 +322,30 @@
       },
       compile: function(element, attr) {
         return function($scope, $element, $attr, swipeCards) {
-          console.log('directive SwipeCard link')
           var el = $element[0];
 
           // Instantiate our card view
           var swipeableCard = new SwipeableCardView({
             el: el,
-            onSwipe: function() {
+            fly: $attr.fly || 'back',  // 'out' to fly offscreen, otherwise fly back in place
+            onSwipe: function(keep) {
               $timeout(function() {
-                $scope.onCardSwipe();
-              });
-            },
-            onDestroy: function(keep) {
-              $timeout(function() {
+                $scope.onCardSwipe(keep);
                 if (keep) {
                   $scope.onKeep()
                 }
                 else $scope.onReject();
               });
             },
+            onDestroy: function(keep) {
+              $timeout(function() {
+                $scope.onDestroy({keep: keep})
+              });
+            },
           });
           $scope.$parent.swipeCard = swipeableCard;
+          // back link, use from parent scope onDestroy() callback, but should use $ionicSwipeCardDelegate
+          // el.swipeCard = swipeableCard
 
           swipeCards.pushCard(swipeableCard);
 
