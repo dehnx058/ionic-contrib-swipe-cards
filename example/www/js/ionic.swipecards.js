@@ -165,44 +165,39 @@
     /**
      * Swipe a card out programtically
      */
-    swipe: function(positive) {
-      this.transitionOut(positive);
+    swipeOut: function(positive) {
+      if (positive === 'right') positive = true;
+      if (positive === 'left') positive = false;  
+      this.transitionOut(positive, false);
     },
 
     /**
-     * Fly the card right or left
+     * Fly the card back to original position on return=true, or right or left 
      */
-    transitionOut: function(positive) {
+    transitionOut: function(positive, in_place=true) {
       var self = this;
+      var duration = 0.2;
+      var fly;
+      this.el.style[TRANSITION] = '-webkit-transform ' + duration + 's ease-in-out';
+
       if((positive === true) || (this.x > 0)) {
         // Fly right
-        var rotateTo = 0; // (this.rotationAngle + (this.rotationDirection * 0.6)) || (Math.random() * -0.4);
-        var duration = this.rotationAngle ? 0.2 : 0.5;
-        duration = 0.2  // deprecate rotationAngle
-        this.el.style[TRANSITION] = '-webkit-transform ' + duration + 's ease-in-out';
-        // this.el.style[ionic.CSS.TRANSFORM] = 'translate3d(' + (0 * window.innerWidth * 1.5) + 'px,' + this.y + 'px, 0) rotate(' + rotateTo + 'rad)';
-        this.el.style[ionic.CSS.TRANSFORM] = 'translate3d(' + (0 * window.innerWidth * 1.5) + 'px,' + this.y + 'px, 0)';
+        fly = in_place ? 0 : 1;
+        this.el.style[ionic.CSS.TRANSFORM] = 'translate3d(' + (fly * window.innerWidth * 1.5) + 'px,' + this.y + 'px, 0)';
         this.onSwipe && this.onSwipe();
 
         self.positive = true;
-        // Trigger destroy after card has swiped out
-        setTimeout(function() {
-          self.onDestroy && self.onDestroy(true);
-        }, duration * 1000);
       } else {
         // Fly left
-        var rotateTo = 0; // (this.rotationAngle + (this.rotationDirection * 0.6)) || (Math.random() * 0.4);
-        var duration = this.rotationAngle ? 0.2 : 0.5;
-        duration = 0.2  // deprecate rotationAngle
-        this.el.style[TRANSITION] = '-webkit-transform ' + duration + 's ease-in-out';
-        // this.el.style[ionic.CSS.TRANSFORM] = 'translate3d(' + (0 * window.innerWidth * -1.5) + 'px,' + this.y + 'px, 0) rotate(' + rotateTo + 'rad)';
-        this.el.style[ionic.CSS.TRANSFORM] = 'translate3d(' + (0 * window.innerWidth * -1.5) + 'px,' + this.y + 'px, 0)';
+        this.el.style[ionic.CSS.TRANSFORM] = 'translate3d(' + (fly * window.innerWidth * -1.5) + 'px,' + this.y + 'px, 0)';
         this.onSwipe && this.onSwipe();
 
         self.positive = false;
-        // Trigger destroy after card has swiped out
+      }
+      // Trigger destroy after card has swiped out
+      if (!in_place) {
         setTimeout(function() {
-          self.onDestroy && self.onDestroy();
+          self.onDestroy && self.onDestroy(true);
         }, duration * 1000);
       }
     },
@@ -301,6 +296,7 @@
       },
       compile: function(element, attr) {
         return function($scope, $element, $attr, swipeCards) {
+          console.log('directive SwipeCard link')
           var el = $element[0];
 
           // Instantiate our card view
@@ -331,7 +327,7 @@
 
   .directive('swipeCards', ['$rootScope', function($rootScope) {
     return {
-      restrict: 'E',
+      restrict: 'EA',
       template: '<div class="swipe-cards" ng-transclude></div>',
       replace: true,
       transclude: true,

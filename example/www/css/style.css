@@ -103,6 +103,10 @@ ion-item.item-complex .item-content {
   margin: 4px auto;
 }
 
+.swipe-cards {
+  width: 100%;
+}
+
 .swipe-card.keep .tossable-card .item.item-divider {
   background-color: lightgreen !important;
 }

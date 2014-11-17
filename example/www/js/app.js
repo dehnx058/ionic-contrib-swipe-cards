@@ -1,3 +1,5 @@
+// http://codepen.io/anon/pen/ZYzPOY
+
 // Ionic Starter App
 
 // angular.module is a global place for creating, registering and retrieving Angular modules
@@ -85,17 +87,14 @@ angular.module('starter', ['ionic', 'ionic.contrib.ui.cards'])
     $scope.cards.splice(index, 1);
   };
 
-  $scope.cardReject = function(index) {
-    console.log('cardReject, index='+index)
-    var swipeCard = this.swipeCard;
-    angular.element(swipeCard.el).addClass('reject').removeClass('keep')
+  $scope.cardReject = function(card) {
+    console.log('cardReject, title=' + card.title)
+    card.topPick = false
   };
 
-  $scope.cardKeep = function(index) {
-    // $scope.cards.splice(index, 1);
-    console.log('cardKeep, index='+index)
-    var swipeCard = this.swipeCard;
-    angular.element(swipeCard.el).addClass('keep').removeClass('reject')
+  $scope.cardKeep = function(card) {
+    console.log('cardKeep, title=' + card.title)
+    card.topPick = true
   };
 
   $scope.addCard = function() {
